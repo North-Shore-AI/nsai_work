@@ -26,7 +26,7 @@ defmodule Work.Job do
   Jobs can be retried based on their constraints, moving back to `queued`.
   """
 
-  alias Work.{Resources, Constraints, Error}
+  alias Work.{Constraints, Error, Resources}
 
   @type priority :: :realtime | :interactive | :batch | :offline
 

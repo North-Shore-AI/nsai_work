@@ -1,21 +1,41 @@
 defmodule WorkTest do
-  use ExUnit.Case
-  doctest Work
+  use ExUnit.Case, async: true
 
+  alias Work.Backends.Mock
   alias Work.{Job, Registry}
 
   setup do
     # Reset mock backend between tests
-    Work.Backends.Mock.reset()
-    :ok
+    Mock.reset()
+
+    # Use unique tenant IDs to avoid conflicts in async tests
+    tenant_id = "test_#{System.unique_integer([:positive])}"
+
+    {:ok, tenant_id: tenant_id}
   end
 
   describe "submit/1" do
-    test "submits a job and executes it" do
+    test "submits a job and executes it", %{tenant_id: tenant_id} do
+      # Set up telemetry handler to wait for job completion
+      test_pid = self()
+      ref = make_ref()
+      handler_id = "test-handler-#{inspect(ref)}"
+
+      :telemetry.attach(
+        handler_id,
+        [:work, :job, :completed],
+        fn _event, _measurements, metadata, config ->
+          send(config.test_pid, {:job_completed, metadata.job_id})
+        end,
+        %{test_pid: test_pid}
+      )
+
+      on_exit(fn -> :telemetry.detach(handler_id) end)
+
       job =
         Job.new(
           kind: :tool_call,
-          tenant_id: "test",
+          tenant_id: tenant_id,
           namespace: "default",
           payload: %{tool: "echo", args: ["hello"]}
         )
@@ -23,19 +43,20 @@ defmodule WorkTest do
       {:ok, submitted} = Work.submit(job)
       assert submitted.status == :queued
 
-      # Wait for execution
-      Process.sleep(200)
+      # Wait for job completion via telemetry (deterministic, no polling)
+      job_id = submitted.id
+      assert_receive {:job_completed, ^job_id}, 1000
 
-      # Check job status
+      # Verify final state
       {:ok, executed} = Work.get(submitted.id)
       assert executed.status in [:running, :succeeded]
     end
 
-    test "submits and tracks job" do
+    test "submits and tracks job", %{tenant_id: tenant_id} do
       job =
         Job.new(
           kind: :tool_call,
-          tenant_id: "test2",
+          tenant_id: tenant_id,
           namespace: "default",
           payload: %{}
         )
@@ -52,11 +73,11 @@ defmodule WorkTest do
   end
 
   describe "get/1" do
-    test "retrieves a job by ID" do
+    test "retrieves a job by ID", %{tenant_id: tenant_id} do
       job =
         Job.new(
           kind: :tool_call,
-          tenant_id: "test",
+          tenant_id: tenant_id,
           namespace: "default",
           payload: %{}
         )
@@ -68,19 +89,16 @@ defmodule WorkTest do
     end
 
     test "returns error for nonexistent job" do
-      assert {:error, :not_found} = Work.get("nonexistent")
+      assert {:error, :not_found} = Work.get("nonexistent_#{System.unique_integer()}")
     end
   end
 
   describe "list/2" do
-    test "lists jobs for a tenant" do
-      # Use unique tenant to avoid conflicts with other tests
-      tenant = "tenant_#{:rand.uniform(100_000)}"
-
+    test "lists jobs for a tenant", %{tenant_id: tenant_id} do
       job1 =
         Job.new(
           kind: :tool_call,
-          tenant_id: tenant,
+          tenant_id: tenant_id,
           namespace: "default",
           payload: %{}
         )
@@ -88,15 +106,18 @@ defmodule WorkTest do
       job2 =
         Job.new(
           kind: :tool_call,
-          tenant_id: tenant,
+          tenant_id: tenant_id,
           namespace: "production",
           payload: %{}
         )
 
+      # Use unique tenant for other job to ensure isolation
+      other_tenant = "other_#{System.unique_integer([:positive])}"
+
       job3 =
         Job.new(
           kind: :tool_call,
-          tenant_id: "other_tenant",
+          tenant_id: other_tenant,
           namespace: "default",
           payload: %{}
         )
@@ -105,19 +126,16 @@ defmodule WorkTest do
       Registry.put(job2)
       Registry.put(job3)
 
-      jobs = Work.list(tenant)
+      jobs = Work.list(tenant_id)
       assert length(jobs) == 2
-      assert Enum.all?(jobs, &(&1.tenant_id == tenant))
+      assert Enum.all?(jobs, &(&1.tenant_id == tenant_id))
     end
 
-    test "filters jobs by namespace" do
-      # Use unique tenant to avoid conflicts
-      tenant = "tenant_#{:rand.uniform(100_000)}"
-
+    test "filters jobs by namespace", %{tenant_id: tenant_id} do
       job1 =
         Job.new(
           kind: :tool_call,
-          tenant_id: tenant,
+          tenant_id: tenant_id,
           namespace: "default",
           payload: %{}
         )
@@ -125,7 +143,7 @@ defmodule WorkTest do
       job2 =
         Job.new(
           kind: :tool_call,
-          tenant_id: tenant,
+          tenant_id: tenant_id,
           namespace: "production",
           payload: %{}
         )
@@ -133,7 +151,7 @@ defmodule WorkTest do
       Registry.put(job1)
       Registry.put(job2)
 
-      jobs = Work.list(tenant, namespace: "production")
+      jobs = Work.list(tenant_id, namespace: "production")
       assert length(jobs) == 1
       assert hd(jobs).namespace == "production"
     end

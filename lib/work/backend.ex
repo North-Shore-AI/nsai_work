@@ -18,7 +18,7 @@ defmodule Work.Backend do
   - `supports?/1` - Check if job type is supported
   """
 
-  alias Work.{Job, Error}
+  alias Work.{Error, Job}
 
   @type execute_result :: {:ok, term()} | {:error, Error.t()}
   @type cancel_result :: :ok | {:error, Error.t()}

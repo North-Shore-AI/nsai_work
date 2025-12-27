@@ -13,7 +13,7 @@ defmodule Work.Executor do
   use GenServer
   require Logger
 
-  alias Work.{Job, Registry, Telemetry, Backends, Constraints}
+  alias Work.{Backends, Constraints, Job, Registry, Telemetry}
 
   @default_backends [
     local: Backends.Local,

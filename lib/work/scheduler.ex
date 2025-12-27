@@ -12,7 +12,7 @@ defmodule Work.Scheduler do
   use GenServer
   require Logger
 
-  alias Work.{Job, Queue, Registry, Executor, Telemetry}
+  alias Work.{Executor, Job, Queue, Registry, Telemetry}
 
   @priorities [:realtime, :interactive, :batch, :offline]
 

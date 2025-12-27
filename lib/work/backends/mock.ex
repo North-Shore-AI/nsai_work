@@ -25,7 +25,7 @@ defmodule Work.Backends.Mock do
 
   @behaviour Work.Backend
 
-  alias Work.{Job, Error}
+  alias Work.{Error, Job}
 
   use Agent
 

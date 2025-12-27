@@ -123,15 +123,13 @@ defmodule Work.Queue do
   def handle_call({:enqueue, job}, _from, state) do
     current_size = :queue.len(state.jobs)
 
-    cond do
-      state.max_size != :unlimited and current_size >= state.max_size ->
-        Telemetry.queue_overflow(state.name)
-        {:reply, {:error, :queue_full}, state}
-
-      true ->
-        updated_jobs = :queue.in(job, state.jobs)
-        Telemetry.queue_enqueue(state.name, job)
-        {:reply, {:ok, job}, %{state | jobs: updated_jobs}}
+    if state.max_size != :unlimited and current_size >= state.max_size do
+      Telemetry.queue_overflow(state.name)
+      {:reply, {:error, :queue_full}, state}
+    else
+      updated_jobs = :queue.in(job, state.jobs)
+      Telemetry.queue_enqueue(state.name, job)
+      {:reply, {:ok, job}, %{state | jobs: updated_jobs}}
     end
   end
 

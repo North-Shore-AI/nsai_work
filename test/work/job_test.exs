@@ -1,8 +1,8 @@
 defmodule Work.JobTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Work.Job
 
-  alias Work.{Job, Error, Resources, Constraints}
+  alias Work.{Constraints, Error, Job, Resources}
 
   describe "new/1" do
     test "creates a job with defaults" do
@@ -144,12 +144,29 @@ defmodule Work.JobTest do
       job = Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
       running = Job.mark_running(job, :local, "w1")
 
-      Process.sleep(10)
+      # Use a deterministic approach: create a job with explicit timestamps
+      # to avoid timing-dependent assertions
+      now = DateTime.utc_now()
+      started = DateTime.add(now, -100, :millisecond)
+
+      running_with_start = %{running | started_at: started}
+      completed = Job.mark_succeeded(running_with_start, nil)
+
+      duration = Job.duration_ms(completed)
+      assert is_integer(duration)
+      # Duration should be at least 100ms since we set started_at 100ms in the past
+      assert duration >= 100
+    end
+
+    test "returns zero or positive duration for instantaneous completion" do
+      job = Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      running = Job.mark_running(job, :local, "w1")
       completed = Job.mark_succeeded(running, nil)
 
       duration = Job.duration_ms(completed)
       assert is_integer(duration)
-      assert duration >= 10
+      # Duration should be non-negative (could be 0 if very fast)
+      assert duration >= 0
     end
   end
 end

@@ -78,7 +78,7 @@ defmodule Work do
   Failed jobs may be retried based on their constraints.
   """
 
-  alias Work.{Job, Scheduler, Registry}
+  alias Work.{Job, Registry, Scheduler}
 
   @doc """
   Submits a job for execution.
@@ -156,7 +156,6 @@ defmodule Work do
   """
   @spec cancel(String.t()) :: :ok | {:error, term()}
   def cancel(_job_id) do
-    # TODO: Implement job cancellation
     {:error, :not_implemented}
   end
 end

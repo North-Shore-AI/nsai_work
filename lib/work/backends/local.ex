@@ -16,7 +16,7 @@ defmodule Work.Backends.Local do
 
   @behaviour Work.Backend
 
-  alias Work.{Job, Error}
+  alias Work.{Error, Job}
   require Logger
 
   @impl true

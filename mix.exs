@@ -42,12 +42,14 @@ defmodule Work.MixProject do
       # Core dependencies
       {:telemetry, "~> 1.0"},
       {:jason, "~> 1.4"},
+      {:altar, "~> 0.2.0"},
 
       # Development and testing
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:excoveralls, "~> 0.18", only: :test},
+      {:supertester, "~> 0.4.0", only: :test}
     ]
   end
 
@@ -92,7 +94,11 @@ defmodule Work.MixProject do
         Backends: [
           Work.Backend,
           Work.Backends.Local,
+          Work.Backends.Altar,
           Work.Backends.Mock
+        ],
+        "ALTAR Integration": [
+          Work.AltarTools
         ],
         Infrastructure: [
           Work.Registry,
