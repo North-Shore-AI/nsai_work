@@ -1,8 +1,8 @@
-defmodule Work do
+defmodule NsaiWork do
   @moduledoc """
-  NSAI.Work - Unified job scheduler for the North-Shore-AI platform.
+  NsaiWork - Unified job scheduler for the North-Shore-AI platform.
 
-  Work provides a protocol-first, multi-tenant job scheduling system with:
+  NsaiWork provides a protocol-first, multi-tenant job scheduling system with:
 
   - **Unified Job IR**: Single representation for all work types
   - **Priority Queues**: realtime/interactive/batch/offline
@@ -14,10 +14,10 @@ defmodule Work do
   ## Quick Start
 
       # Start the application
-      {:ok, _} = Application.ensure_all_started(:work)
+      {:ok, _} = Application.ensure_all_started(:nsai_work)
 
       # Submit a job
-      job = Work.Job.new(
+      job = NsaiWork.Job.new(
         kind: :tool_call,
         tenant_id: "acme",
         namespace: "default",
@@ -25,32 +25,32 @@ defmodule Work do
         payload: %{tool: "calculator", args: [2, 2]}
       )
 
-      {:ok, submitted} = Work.submit(job)
+      {:ok, submitted} = NsaiWork.submit(job)
 
       # Check job status
-      {:ok, job} = Work.get(submitted.id)
+      {:ok, job} = NsaiWork.get(submitted.id)
       job.status  # => :running or :succeeded
 
       # Get queue statistics
-      stats = Work.stats()
+      stats = NsaiWork.stats()
 
   ## Architecture
 
-  Work consists of several components:
+  NsaiWork consists of several components:
 
-  - `Work.Job` - Universal job IR
-  - `Work.Scheduler` - Priority queue management and admission control
-  - `Work.Queue` - FIFO queues per priority level
-  - `Work.Executor` - Job execution with backend delegation
-  - `Work.Registry` - ETS-based job storage and indexing
-  - `Work.Backend` - Pluggable execution backends
-  - `Work.Telemetry` - Event instrumentation
+  - `NsaiWork.Job` - Universal job IR
+  - `NsaiWork.Scheduler` - Priority queue management and admission control
+  - `NsaiWork.Queue` - FIFO queues per priority level
+  - `NsaiWork.Executor` - Job execution with backend delegation
+  - `NsaiWork.Registry` - ETS-based job storage and indexing
+  - `NsaiWork.Backend` - Pluggable execution backends
+  - `NsaiWork.Telemetry` - Event instrumentation
 
   ## Multi-Tenancy
 
   All jobs are associated with a tenant and namespace:
 
-      job = Work.Job.new(
+      job = NsaiWork.Job.new(
         tenant_id: "customer-123",
         namespace: "production",
         # ... other fields
@@ -78,7 +78,7 @@ defmodule Work do
   Failed jobs may be retried based on their constraints.
   """
 
-  alias Work.{Job, Registry, Scheduler}
+  alias NsaiWork.{Job, Registry, Scheduler}
 
   @doc """
   Submits a job for execution.
@@ -88,13 +88,13 @@ defmodule Work do
 
   ## Examples
 
-      iex> job = Work.Job.new(
+      iex> job = NsaiWork.Job.new(
       ...>   kind: :tool_call,
       ...>   tenant_id: "test",
       ...>   namespace: "default",
       ...>   payload: %{tool: "echo", args: ["hello"]}
       ...> )
-      iex> {:ok, submitted} = Work.submit(job)
+      iex> {:ok, submitted} = NsaiWork.submit(job)
       iex> submitted.status
       :queued
   """
@@ -124,8 +124,8 @@ defmodule Work do
 
   ## Examples
 
-      iex> _jobs = Work.list("acme")
-      iex> _filtered = Work.list("acme", status: :running)
+      iex> _jobs = NsaiWork.list("acme")
+      iex> _filtered = NsaiWork.list("acme", status: :running)
   """
   @spec list(String.t(), keyword()) :: [Job.t()]
   def list(tenant_id, opts \\ []) do
@@ -137,7 +137,7 @@ defmodule Work do
 
   ## Examples
 
-      iex> stats = Work.stats()
+      iex> stats = NsaiWork.stats()
       iex> Map.has_key?(stats, :scheduler)
       true
       iex> Map.has_key?(stats, :registry)

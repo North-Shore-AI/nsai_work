@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="50%" stop-color="#16213e"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e94560"/>
+      <stop offset="100%" stop-color="#c23152"/>
+    </linearGradient>
+    <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#b0b0b0"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="innerGlow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <clipPath id="hexClip">
+      <polygon points="100,10 178,45 178,115 100,150 22,115 22,45"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background hexagon with shadow -->
+  <polygon points="100,10 178,45 178,155 100,190 22,155 22,45"
+           fill="url(#hexGrad)" stroke="#e94560" stroke-width="2.5"
+           filter="url(#shadow)"/>
+
+  <!-- Inner hexagon border -->
+  <polygon points="100,22 168,52 168,148 100,178 32,148 32,52"
+           fill="none" stroke="#e94560" stroke-width="0.5" opacity="0.4"/>
+
+  <!-- Circuit-like decorative lines -->
+  <g stroke="#e94560" stroke-width="0.8" opacity="0.25">
+    <line x1="32" y1="70" x2="55" y2="70"/>
+    <line x1="145" y1="130" x2="168" y2="130"/>
+    <line x1="55" y1="52" x2="55" y2="65"/>
+    <line x1="145" y1="135" x2="145" y2="148"/>
+    <circle cx="55" cy="70" r="1.5" fill="#e94560"/>
+    <circle cx="145" cy="130" r="1.5" fill="#e94560"/>
+  </g>
+
+  <!-- Gear icon (work/scheduling theme) -->
+  <g transform="translate(100,92)" filter="url(#innerGlow)">
+    <!-- Outer gear teeth -->
+    <path d="M0,-38 L5,-38 L7,-32 L12,-30 L17,-34 L21,-30 L17,-25 L18,-20 L24,-18 L24,-13
+             L18,-11 L17,-6 L21,-1 L17,3 L12,0 L7,2 L5,8 L0,8
+             L-5,8 L-7,2 L-12,0 L-17,3 L-21,-1 L-17,-6 L-18,-11 L-24,-13
+             L-24,-18 L-18,-20 L-17,-25 L-21,-30 L-17,-34 L-12,-30 L-7,-32 L-5,-38 Z"
+          fill="url(#gearGrad)" opacity="0.9"/>
+    <!-- Gear center hole -->
+    <circle cx="0" cy="-15" r="10" fill="url(#hexGrad)" stroke="#b0b0b0" stroke-width="1"/>
+    <!-- Gear center dot -->
+    <circle cx="0" cy="-15" r="3" fill="#e94560"/>
+  </g>
+
+  <!-- Queue/list lines (job scheduler theme) -->
+  <g transform="translate(68, 118)">
+    <rect x="0" y="0" width="64" height="6" rx="3" fill="url(#accentGrad)" opacity="0.9"/>
+    <rect x="8" y="12" width="48" height="5" rx="2.5" fill="#e8e8e8" opacity="0.5"/>
+    <rect x="8" y="22" width="40" height="5" rx="2.5" fill="#e8e8e8" opacity="0.3"/>
+    <rect x="8" y="32" width="44" height="5" rx="2.5" fill="#e8e8e8" opacity="0.2"/>
+  </g>
+
+  <!-- Small arrow indicators on queue items -->
+  <g fill="#e94560" opacity="0.7">
+    <polygon points="70,125 74,127.5 70,130"/>
+    <polygon points="70,137 74,139.5 70,142" opacity="0.4"/>
+    <polygon points="70,147 74,149.5 70,152" opacity="0.25"/>
+  </g>
+
+  <!-- "W" monogram -->
+  <text x="100" y="180" text-anchor="middle" font-family="monospace" font-weight="bold"
+        font-size="11" fill="#e94560" opacity="0.6" letter-spacing="2">W</text>
+</svg>

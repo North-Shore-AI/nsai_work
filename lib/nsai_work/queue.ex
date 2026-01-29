@@ -1,4 +1,4 @@
-defmodule Work.Queue do
+defmodule NsaiWork.Queue do
   @moduledoc """
   Priority queue implementation for job scheduling.
 
@@ -14,7 +14,7 @@ defmodule Work.Queue do
   use GenServer
   require Logger
 
-  alias Work.{Job, Telemetry}
+  alias NsaiWork.{Job, Telemetry}
 
   @type priority :: :realtime | :interactive | :batch | :offline
   @type t :: %__MODULE__{
@@ -49,7 +49,7 @@ defmodule Work.Queue do
 
   ## Examples
 
-      iex> Work.Queue.enqueue(queue_pid, job)
+      iex> NsaiWork.Queue.enqueue(queue_pid, job)
       {:ok, job}
   """
   @spec enqueue(GenServer.server(), Job.t()) :: {:ok, Job.t()} | {:error, :queue_full}
@@ -64,8 +64,8 @@ defmodule Work.Queue do
 
   ## Examples
 
-      iex> Work.Queue.dequeue(queue_pid)
-      {:ok, %Work.Job{}}
+      iex> NsaiWork.Queue.dequeue(queue_pid)
+      {:ok, %NsaiWork.Job{}}
   """
   @spec dequeue(GenServer.server()) :: {:ok, Job.t()} | {:error, :empty}
   def dequeue(queue) do
@@ -77,7 +77,7 @@ defmodule Work.Queue do
 
   ## Examples
 
-      iex> Work.Queue.size(queue_pid)
+      iex> NsaiWork.Queue.size(queue_pid)
       42
   """
   @spec size(GenServer.server()) :: non_neg_integer()
@@ -90,7 +90,7 @@ defmodule Work.Queue do
 
   ## Examples
 
-      iex> Work.Queue.stats(queue_pid)
+      iex> NsaiWork.Queue.stats(queue_pid)
       %{
         name: :batch_queue,
         priority: :batch,
@@ -114,7 +114,7 @@ defmodule Work.Queue do
       jobs: :queue.new()
     }
 
-    Logger.info("Work.Queue #{state.name} started (priority: #{state.priority})")
+    Logger.info("NsaiWork.Queue #{state.name} started (priority: #{state.priority})")
 
     {:ok, state}
   end

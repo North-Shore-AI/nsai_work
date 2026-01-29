@@ -1,4 +1,4 @@
-defmodule Work.Registry do
+defmodule NsaiWork.Registry do
   @moduledoc """
   ETS-based job registry for fast lookups.
 
@@ -13,11 +13,11 @@ defmodule Work.Registry do
   use GenServer
   require Logger
 
-  alias Work.Job
+  alias NsaiWork.Job
 
-  @table :work_registry
-  @tenant_index :work_registry_tenant_index
-  @status_index :work_registry_status_index
+  @table :nsai_work_registry
+  @tenant_index :nsai_work_registry_tenant_index
+  @status_index :nsai_work_registry_status_index
 
   ## Client API
 
@@ -33,7 +33,7 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.put(job)
+      iex> NsaiWork.Registry.put(job)
       :ok
   """
   @spec put(Job.t()) :: :ok
@@ -46,10 +46,10 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.get("job-123")
-      {:ok, %Work.Job{}}
+      iex> NsaiWork.Registry.get("job-123")
+      {:ok, %NsaiWork.Job{}}
 
-      iex> Work.Registry.get("nonexistent")
+      iex> NsaiWork.Registry.get("nonexistent")
       {:error, :not_found}
   """
   @spec get(String.t()) :: {:ok, Job.t()} | {:error, :not_found}
@@ -65,7 +65,7 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.delete("job-123")
+      iex> NsaiWork.Registry.delete("job-123")
       :ok
   """
   @spec delete(String.t()) :: :ok
@@ -84,11 +84,11 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.list_by_tenant("acme")
-      [%Work.Job{}, ...]
+      iex> NsaiWork.Registry.list_by_tenant("acme")
+      [%NsaiWork.Job{}, ...]
 
-      iex> Work.Registry.list_by_tenant("acme", status: :running)
-      [%Work.Job{}, ...]
+      iex> NsaiWork.Registry.list_by_tenant("acme", status: :running)
+      [%NsaiWork.Job{}, ...]
   """
   @spec list_by_tenant(String.t(), keyword()) :: [Job.t()]
   def list_by_tenant(tenant_id, opts \\ []) do
@@ -118,8 +118,8 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.list_by_status(:running)
-      [%Work.Job{}, ...]
+      iex> NsaiWork.Registry.list_by_status(:running)
+      [%NsaiWork.Job{}, ...]
   """
   @spec list_by_status(Job.status()) :: [Job.t()]
   def list_by_status(status) do
@@ -140,7 +140,7 @@ defmodule Work.Registry do
 
   ## Examples
 
-      iex> Work.Registry.stats()
+      iex> NsaiWork.Registry.stats()
       %{
         total: 150,
         by_status: %{pending: 10, running: 5, succeeded: 135},
@@ -161,7 +161,7 @@ defmodule Work.Registry do
     :ets.new(@tenant_index, [:named_table, :set, :public, read_concurrency: true])
     :ets.new(@status_index, [:named_table, :set, :public, read_concurrency: true])
 
-    Logger.info("Work.Registry started")
+    Logger.info("NsaiWork.Registry started")
 
     {:ok, %{}}
   end

@@ -1,4 +1,4 @@
-defmodule Work.Job do
+defmodule NsaiWork.Job do
   @moduledoc """
   Universal job IR representing any unit of work across the NSAI platform.
 
@@ -26,7 +26,7 @@ defmodule Work.Job do
   Jobs can be retried based on their constraints, moving back to `queued`.
   """
 
-  alias Work.{Constraints, Error, Resources}
+  alias NsaiWork.{Constraints, Error, Resources}
 
   @type priority :: :realtime | :interactive | :batch | :offline
 
@@ -109,7 +109,7 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(
+      iex> job = NsaiWork.Job.new(
       ...>   kind: :tool_call,
       ...>   tenant_id: "acme",
       ...>   namespace: "default",
@@ -144,8 +144,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> queued = Work.Job.mark_queued(job)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> queued = NsaiWork.Job.mark_queued(job)
       iex> queued.status
       :queued
   """
@@ -159,8 +159,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> running = Work.Job.mark_running(job, :local, "worker-1")
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> running = NsaiWork.Job.mark_running(job, :local, "worker-1")
       iex> running.status
       :running
       iex> running.backend
@@ -182,8 +182,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> succeeded = Work.Job.mark_succeeded(job, %{answer: 42})
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> succeeded = NsaiWork.Job.mark_succeeded(job, %{answer: 42})
       iex> succeeded.status
       :succeeded
       iex> succeeded.result
@@ -199,9 +199,9 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> error = Work.Error.new(category: :timeout, code: "TIMEOUT", message: "Job timed out")
-      iex> failed = Work.Job.mark_failed(job, error)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> error = NsaiWork.Error.new(category: :timeout, code: "TIMEOUT", message: "Job timed out")
+      iex> failed = NsaiWork.Job.mark_failed(job, error)
       iex> failed.status
       :failed
   """
@@ -215,8 +215,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> canceled = Work.Job.mark_canceled(job)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> canceled = NsaiWork.Job.mark_canceled(job)
       iex> canceled.status
       :canceled
   """
@@ -238,8 +238,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> retried = Work.Job.increment_attempt(job)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> retried = NsaiWork.Job.increment_attempt(job)
       iex> retried.attempt
       1
   """
@@ -253,13 +253,13 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> Work.Job.terminal?(job)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> NsaiWork.Job.terminal?(job)
       false
 
-      iex> job2 = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> succeeded = Work.Job.mark_succeeded(job2, %{})
-      iex> Work.Job.terminal?(succeeded)
+      iex> job2 = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> succeeded = NsaiWork.Job.mark_succeeded(job2, %{})
+      iex> NsaiWork.Job.terminal?(succeeded)
       true
   """
   @spec terminal?(t()) :: boolean()
@@ -274,8 +274,8 @@ defmodule Work.Job do
 
   ## Examples
 
-      iex> job = Work.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
-      iex> Work.Job.duration_ms(job)
+      iex> job = NsaiWork.Job.new(kind: :tool_call, tenant_id: "test", namespace: "default", payload: %{})
+      iex> NsaiWork.Job.duration_ms(job)
       nil
   """
   @spec duration_ms(t()) :: non_neg_integer() | nil

@@ -1,4 +1,4 @@
-defmodule Work.AltarTools do
+defmodule NsaiWork.AltarTools do
   @moduledoc """
   Tool registration for ALTAR integration.
 
@@ -13,7 +13,7 @@ defmodule Work.AltarTools do
   ## Usage
 
       # Register a simple tool
-      Work.AltarTools.register(
+      NsaiWork.AltarTools.register(
         "calculator_add",
         "Add two numbers",
         %{
@@ -30,7 +30,7 @@ defmodule Work.AltarTools do
       )
 
       # Register a tool with custom validation
-      Work.AltarTools.register(
+      NsaiWork.AltarTools.register(
         "proposer_extract",
         "Extract claims from document",
         %{
@@ -55,8 +55,8 @@ defmodule Work.AltarTools do
 
   The ALTAR registry name can be configured:
 
-      config :work,
-        altar_registry: Work.AltarRegistry
+      config :nsai_work,
+        altar_registry: NsaiWork.AltarRegistry
   """
 
   alias Altar.ADM.FunctionDeclaration
@@ -92,7 +92,7 @@ defmodule Work.AltarTools do
   ## Examples
 
       # Simple string transformation tool
-      Work.AltarTools.register(
+      NsaiWork.AltarTools.register(
         "uppercase",
         "Convert text to uppercase",
         %{
@@ -104,7 +104,7 @@ defmodule Work.AltarTools do
       )
 
       # Tool with multiple parameters
-      Work.AltarTools.register(
+      NsaiWork.AltarTools.register(
         "search_documents",
         "Search document corpus",
         %{
@@ -153,7 +153,7 @@ defmodule Work.AltarTools do
 
   ## Examples
 
-      if Work.AltarTools.registered?("calculator_add") do
+      if NsaiWork.AltarTools.registered?("calculator_add") do
         IO.puts("Tool is available")
       end
   """
@@ -168,6 +168,6 @@ defmodule Work.AltarTools do
   # Private helpers
 
   defp registry_name do
-    Application.get_env(:work, :altar_registry, Work.AltarRegistry)
+    Application.get_env(:nsai_work, :altar_registry, NsaiWork.AltarRegistry)
   end
 end

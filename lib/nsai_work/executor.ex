@@ -1,4 +1,4 @@
-defmodule Work.Executor do
+defmodule NsaiWork.Executor do
   @moduledoc """
   Job executor that delegates to backends.
 
@@ -13,7 +13,7 @@ defmodule Work.Executor do
   use GenServer
   require Logger
 
-  alias Work.{Backends, Constraints, Job, Registry, Telemetry}
+  alias NsaiWork.{Backends, Constraints, Job, Registry, Telemetry}
 
   @default_backends [
     local: Backends.Local,
@@ -42,7 +42,7 @@ defmodule Work.Executor do
 
   ## Examples
 
-      iex> Work.Executor.execute(job)
+      iex> NsaiWork.Executor.execute(job)
       :ok
   """
   @spec execute(Job.t()) :: :ok
@@ -55,10 +55,10 @@ defmodule Work.Executor do
 
   ## Examples
 
-      iex> Work.Executor.execute_sync(job)
+      iex> NsaiWork.Executor.execute_sync(job)
       {:ok, %{result: "success"}}
   """
-  @spec execute_sync(Job.t(), timeout()) :: {:ok, term()} | {:error, Work.Error.t()}
+  @spec execute_sync(Job.t(), timeout()) :: {:ok, term()} | {:error, NsaiWork.Error.t()}
   def execute_sync(%Job{} = job, timeout \\ 5000) do
     GenServer.call(__MODULE__, {:execute_sync, job}, timeout)
   end
@@ -74,7 +74,7 @@ defmodule Work.Executor do
       executing: %{}
     }
 
-    Logger.info("Work.Executor started with backends: #{inspect(Map.keys(backends))}")
+    Logger.info("NsaiWork.Executor started with backends: #{inspect(Map.keys(backends))}")
 
     {:ok, state}
   end
@@ -111,7 +111,7 @@ defmodule Work.Executor do
           Logger.error("Failed to select backend for job #{job.id}: #{inspect(reason)}")
 
           error =
-            Work.Error.new(
+            NsaiWork.Error.new(
               category: :backend,
               code: "NO_BACKEND",
               message: "No suitable backend available"
@@ -135,7 +135,7 @@ defmodule Work.Executor do
       rescue
         exception ->
           Logger.error("Backend execution failed: #{inspect(exception)}")
-          {:error, Work.Error.from_exception(exception)}
+          {:error, NsaiWork.Error.from_exception(exception)}
       end
 
     # Handle result

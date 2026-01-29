@@ -1,8 +1,8 @@
-defmodule Work.Backends.AltarIntegrationTest do
+defmodule NsaiWork.Backends.AltarIntegrationTest do
   use ExUnit.Case
 
-  alias Work.Backends.Altar, as: AltarBackend
-  alias Work.{Error, Job}
+  alias NsaiWork.Backends.Altar, as: AltarBackend
+  alias NsaiWork.{Error, Job}
 
   @moduletag :integration
 

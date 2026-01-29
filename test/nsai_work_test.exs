@@ -1,8 +1,8 @@
-defmodule WorkTest do
+defmodule NsaiWorkTest do
   use ExUnit.Case, async: true
 
-  alias Work.Backends.Mock
-  alias Work.{Job, Registry}
+  alias NsaiWork.Backends.Mock
+  alias NsaiWork.{Job, Registry}
 
   setup do
     # Reset mock backend between tests
@@ -23,7 +23,7 @@ defmodule WorkTest do
 
       :telemetry.attach(
         handler_id,
-        [:work, :job, :completed],
+        [:nsai_work, :job, :completed],
         fn _event, _measurements, metadata, config ->
           send(config.test_pid, {:job_completed, metadata.job_id})
         end,
@@ -40,7 +40,7 @@ defmodule WorkTest do
           payload: %{tool: "echo", args: ["hello"]}
         )
 
-      {:ok, submitted} = Work.submit(job)
+      {:ok, submitted} = NsaiWork.submit(job)
       assert submitted.status == :queued
 
       # Wait for job completion via telemetry (deterministic, no polling)
@@ -48,7 +48,7 @@ defmodule WorkTest do
       assert_receive {:job_completed, ^job_id}, 1000
 
       # Verify final state
-      {:ok, executed} = Work.get(submitted.id)
+      {:ok, executed} = NsaiWork.get(submitted.id)
       assert executed.status in [:running, :succeeded]
     end
 
@@ -61,13 +61,13 @@ defmodule WorkTest do
           payload: %{}
         )
 
-      {:ok, submitted} = Work.submit(job)
+      {:ok, submitted} = NsaiWork.submit(job)
 
       # Job should be queued
       assert submitted.status == :queued
 
       # Should be retrievable
-      {:ok, retrieved} = Work.get(submitted.id)
+      {:ok, retrieved} = NsaiWork.get(submitted.id)
       assert retrieved.id == submitted.id
     end
   end
@@ -84,12 +84,12 @@ defmodule WorkTest do
 
       Registry.put(job)
 
-      {:ok, retrieved} = Work.get(job.id)
+      {:ok, retrieved} = NsaiWork.get(job.id)
       assert retrieved.id == job.id
     end
 
     test "returns error for nonexistent job" do
-      assert {:error, :not_found} = Work.get("nonexistent_#{System.unique_integer()}")
+      assert {:error, :not_found} = NsaiWork.get("nonexistent_#{System.unique_integer()}")
     end
   end
 
@@ -126,7 +126,7 @@ defmodule WorkTest do
       Registry.put(job2)
       Registry.put(job3)
 
-      jobs = Work.list(tenant_id)
+      jobs = NsaiWork.list(tenant_id)
       assert length(jobs) == 2
       assert Enum.all?(jobs, &(&1.tenant_id == tenant_id))
     end
@@ -151,7 +151,7 @@ defmodule WorkTest do
       Registry.put(job1)
       Registry.put(job2)
 
-      jobs = Work.list(tenant_id, namespace: "production")
+      jobs = NsaiWork.list(tenant_id, namespace: "production")
       assert length(jobs) == 1
       assert hd(jobs).namespace == "production"
     end
@@ -159,7 +159,7 @@ defmodule WorkTest do
 
   describe "stats/0" do
     test "returns scheduler and registry statistics" do
-      stats = Work.stats()
+      stats = NsaiWork.stats()
 
       assert Map.has_key?(stats, :scheduler)
       assert Map.has_key?(stats, :registry)

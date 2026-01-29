@@ -4,9 +4,9 @@ import Config
 
 # ALTAR Backend Configuration
 # Enable ALTAR backend integration (set to true to use ALTAR tools)
-config :work,
+config :nsai_work,
   enable_altar: false,
-  altar_registry: Work.AltarRegistry
+  altar_registry: NsaiWork.AltarRegistry
 
 # Import environment-specific configuration
 # These files are created when you run `mix new` with the --sup flag

@@ -1,4 +1,4 @@
-defmodule Work.Backend do
+defmodule NsaiWork.Backend do
   @moduledoc """
   Behaviour for job execution backends.
 
@@ -18,7 +18,7 @@ defmodule Work.Backend do
   - `supports?/1` - Check if job type is supported
   """
 
-  alias Work.{Error, Job}
+  alias NsaiWork.{Error, Job}
 
   @type execute_result :: {:ok, term()} | {:error, Error.t()}
   @type cancel_result :: :ok | {:error, Error.t()}
@@ -35,7 +35,7 @@ defmodule Work.Backend do
   ## Examples
 
       defmodule MyBackend do
-        @behaviour Work.Backend
+        @behaviour NsaiWork.Backend
 
         @impl true
         def execute(job) do

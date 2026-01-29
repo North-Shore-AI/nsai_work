@@ -1,4 +1,4 @@
-defmodule Work.Error do
+defmodule NsaiWork.Error do
   @moduledoc """
   Standardized error representation for jobs.
 
@@ -42,13 +42,13 @@ defmodule Work.Error do
 
   ## Examples
 
-      iex> Work.Error.new(
+      iex> NsaiWork.Error.new(
       ...>   category: :timeout,
       ...>   code: "JOB_TIMEOUT",
       ...>   message: "Job exceeded time limit",
       ...>   retryable: true
       ...> )
-      %Work.Error{
+      %NsaiWork.Error{
         category: :timeout,
         code: "JOB_TIMEOUT",
         message: "Job exceeded time limit",
@@ -65,7 +65,7 @@ defmodule Work.Error do
 
   ## Examples
 
-      iex> error = Work.Error.from_exception(%RuntimeError{message: "oops"})
+      iex> error = NsaiWork.Error.from_exception(%RuntimeError{message: "oops"})
       iex> error.category
       :internal
   """

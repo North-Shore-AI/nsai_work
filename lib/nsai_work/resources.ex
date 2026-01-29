@@ -1,4 +1,4 @@
-defmodule Work.Resources do
+defmodule NsaiWork.Resources do
   @moduledoc """
   Resource requirements for job scheduling.
 
@@ -35,8 +35,8 @@ defmodule Work.Resources do
 
   ## Examples
 
-      iex> Work.Resources.new(cpu: 2.0, memory_mb: 4096, gpu: "A100")
-      %Work.Resources{cpu: 2.0, memory_mb: 4096, gpu: "A100"}
+      iex> NsaiWork.Resources.new(cpu: 2.0, memory_mb: 4096, gpu: "A100")
+      %NsaiWork.Resources{cpu: 2.0, memory_mb: 4096, gpu: "A100"}
   """
   @spec new(keyword()) :: t()
   def new(opts \\ []) do
@@ -48,10 +48,10 @@ defmodule Work.Resources do
 
   ## Examples
 
-      iex> Work.Resources.new(gpu: "A100") |> Work.Resources.requires_gpu?()
+      iex> NsaiWork.Resources.new(gpu: "A100") |> NsaiWork.Resources.requires_gpu?()
       true
 
-      iex> Work.Resources.new() |> Work.Resources.requires_gpu?()
+      iex> NsaiWork.Resources.new() |> NsaiWork.Resources.requires_gpu?()
       false
   """
   @spec requires_gpu?(t()) :: boolean()

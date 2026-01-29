@@ -1,12 +1,12 @@
-defmodule Work.MixProject do
+defmodule NsaiWork.MixProject do
   use Mix.Project
 
   @version "0.1.0"
-  @source_url "https://github.com/North-Shore-AI/work"
+  @source_url "https://github.com/North-Shore-AI/nsai_work"
 
   def project do
     [
-      app: :work,
+      app: :nsai_work,
       version: @version,
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
@@ -14,7 +14,7 @@ defmodule Work.MixProject do
       docs: docs(),
       description: description(),
       package: package(),
-      name: "NSAI.Work",
+      name: "NsaiWork",
       source_url: @source_url,
       elixirc_paths: elixirc_paths(Mix.env()),
       test_coverage: [tool: ExCoveralls],
@@ -30,7 +30,7 @@ defmodule Work.MixProject do
   def application do
     [
       extra_applications: [:logger, :crypto],
-      mod: {Work.Application, []}
+      mod: {NsaiWork.Application, []}
     ]
   end
 
@@ -45,17 +45,17 @@ defmodule Work.MixProject do
       {:altar, "~> 0.2.0"},
 
       # Development and testing
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
-      {:supertester, "~> 0.4.0", only: :test}
+      {:supertester, "~> 0.5.1", only: :test}
     ]
   end
 
   defp description do
     """
-    NSAI.Work - Unified job scheduler for the North-Shore-AI platform.
+    NsaiWork - Unified job scheduler for the North-Shore-AI platform.
     Protocol-first, multi-tenant job scheduling with priority queues,
     resource-aware scheduling, and pluggable backend execution.
     """
@@ -63,7 +63,7 @@ defmodule Work.MixProject do
 
   defp package do
     [
-      name: "work",
+      name: "nsai_work",
       files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md),
       licenses: ["MIT"],
       links: %{
@@ -78,32 +78,51 @@ defmodule Work.MixProject do
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url,
-      extras: ["README.md", "CHANGELOG.md"],
+      assets: %{"assets" => "assets"},
+      logo: "assets/work.svg",
+      extras: [
+        {"README.md", title: "Overview"},
+        {"guides/getting-started.md", title: "Getting Started"},
+        {"guides/custom-backends.md", title: "Custom Backends"},
+        {"guides/telemetry.md", title: "Telemetry"},
+        {"examples/README.md", filename: "examples", title: "Examples"},
+        {"CHANGELOG.md", title: "Changelog"},
+        {"LICENSE", title: "License"}
+      ],
+      groups_for_extras: [
+        Guides: [
+          "guides/getting-started.md",
+          "guides/custom-backends.md",
+          "guides/telemetry.md"
+        ],
+        Examples: ["examples/README.md"],
+        Reference: ["CHANGELOG.md", "LICENSE"]
+      ],
       groups_for_modules: [
         "Core IR": [
-          Work.Job,
-          Work.Resources,
-          Work.Constraints,
-          Work.Error
+          NsaiWork.Job,
+          NsaiWork.Resources,
+          NsaiWork.Constraints,
+          NsaiWork.Error
         ],
         Scheduling: [
-          Work.Queue,
-          Work.Scheduler,
-          Work.Executor
+          NsaiWork.Queue,
+          NsaiWork.Scheduler,
+          NsaiWork.Executor
         ],
         Backends: [
-          Work.Backend,
-          Work.Backends.Local,
-          Work.Backends.Altar,
-          Work.Backends.Mock
+          NsaiWork.Backend,
+          NsaiWork.Backends.Local,
+          NsaiWork.Backends.Altar,
+          NsaiWork.Backends.Mock
         ],
         "ALTAR Integration": [
-          Work.AltarTools
+          NsaiWork.AltarTools
         ],
         Infrastructure: [
-          Work.Registry,
-          Work.Telemetry,
-          Work.Supervisor
+          NsaiWork.Registry,
+          NsaiWork.Telemetry,
+          NsaiWork.Supervisor
         ]
       ]
     ]

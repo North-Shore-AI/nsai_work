@@ -1,4 +1,4 @@
-defmodule Work.Constraints do
+defmodule NsaiWork.Constraints do
   @moduledoc """
   Scheduling constraints for job placement.
 
@@ -55,11 +55,11 @@ defmodule Work.Constraints do
 
   ## Examples
 
-      iex> Work.Constraints.new(
+      iex> NsaiWork.Constraints.new(
       ...>   required_backends: [:local],
       ...>   concurrency_group: "model_training"
       ...> )
-      %Work.Constraints{
+      %NsaiWork.Constraints{
         required_backends: [:local],
         concurrency_group: "model_training"
       }
@@ -84,12 +84,12 @@ defmodule Work.Constraints do
 
   ## Examples
 
-      iex> constraints = Work.Constraints.new()
-      iex> Work.Constraints.retry_delay(constraints, 0)
+      iex> constraints = NsaiWork.Constraints.new()
+      iex> NsaiWork.Constraints.retry_delay(constraints, 0)
       1000
 
-      iex> constraints = Work.Constraints.new()
-      iex> delay = Work.Constraints.retry_delay(constraints, 1)
+      iex> constraints = NsaiWork.Constraints.new()
+      iex> delay = NsaiWork.Constraints.retry_delay(constraints, 1)
       iex> delay >= 2000 and delay <= 2100
       true
   """
@@ -123,12 +123,12 @@ defmodule Work.Constraints do
 
   ## Examples
 
-      iex> constraints = Work.Constraints.new()
-      iex> Work.Constraints.can_retry?(constraints, 0)
+      iex> constraints = NsaiWork.Constraints.new()
+      iex> NsaiWork.Constraints.can_retry?(constraints, 0)
       true
 
-      iex> constraints = Work.Constraints.new()
-      iex> Work.Constraints.can_retry?(constraints, 3)
+      iex> constraints = NsaiWork.Constraints.new()
+      iex> NsaiWork.Constraints.can_retry?(constraints, 3)
       false
   """
   @spec can_retry?(t(), non_neg_integer()) :: boolean()

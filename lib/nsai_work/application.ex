@@ -1,4 +1,4 @@
-defmodule Work.Application do
+defmodule NsaiWork.Application do
   @moduledoc false
 
   use Application
@@ -11,25 +11,25 @@ defmodule Work.Application do
         altar_child_spec(),
 
         # Start the job registry
-        Work.Registry,
+        NsaiWork.Registry,
 
         # Start the executor
-        Work.Executor,
+        NsaiWork.Executor,
 
         # Start the scheduler (which starts queues)
-        Work.Scheduler
+        NsaiWork.Scheduler
       ]
       |> Enum.reject(&is_nil/1)
 
-    opts = [strategy: :one_for_one, name: Work.Supervisor]
+    opts = [strategy: :one_for_one, name: NsaiWork.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
   # Private helpers
 
   defp altar_child_spec do
-    if Application.get_env(:work, :enable_altar, false) do
-      registry_name = Application.get_env(:work, :altar_registry, Work.AltarRegistry)
+    if Application.get_env(:nsai_work, :enable_altar, false) do
+      registry_name = Application.get_env(:nsai_work, :altar_registry, NsaiWork.AltarRegistry)
 
       {Altar.Supervisor, name: registry_name}
     end

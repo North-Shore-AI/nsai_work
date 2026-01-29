@@ -1,4 +1,4 @@
-defmodule Work.Backends.Mock do
+defmodule NsaiWork.Backends.Mock do
   @moduledoc """
   Mock backend for testing.
 
@@ -11,21 +11,21 @@ defmodule Work.Backends.Mock do
   ## Examples
 
       # Configure mock to succeed
-      Work.Backends.Mock.configure(behavior: :succeed)
+      NsaiWork.Backends.Mock.configure(behavior: :succeed)
 
       # Configure mock to fail
-      Work.Backends.Mock.configure(behavior: {:fail, "Something went wrong"})
+      NsaiWork.Backends.Mock.configure(behavior: {:fail, "Something went wrong"})
 
       # Configure mock with delay
-      Work.Backends.Mock.configure(delay_ms: 100)
+      NsaiWork.Backends.Mock.configure(delay_ms: 100)
 
       # Get execution history
-      history = Work.Backends.Mock.history()
+      history = NsaiWork.Backends.Mock.history()
   """
 
-  @behaviour Work.Backend
+  @behaviour NsaiWork.Backend
 
-  alias Work.{Error, Job}
+  alias NsaiWork.{Error, Job}
 
   use Agent
 

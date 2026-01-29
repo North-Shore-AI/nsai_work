@@ -1,8 +1,8 @@
-defmodule Work.JobTest do
+defmodule NsaiWork.JobTest do
   use ExUnit.Case, async: true
-  doctest Work.Job
+  doctest NsaiWork.Job
 
-  alias Work.{Constraints, Error, Job, Resources}
+  alias NsaiWork.{Constraints, Error, Job, Resources}
 
   describe "new/1" do
     test "creates a job with defaults" do

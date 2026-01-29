@@ -1,11 +1,15 @@
-# NSAI.Work
+<p align="center">
+  <img src="assets/work.svg" alt="NsaiWork" width="200"/>
+</p>
+
+# NsaiWork
 
 **Unified job scheduler for the North-Shore-AI platform**
 
-[![Hex.pm](https://img.shields.io/hexpm/v/work.svg)](https://hex.pm/packages/work)
-[![Documentation](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/work)
+[![Hex.pm](https://img.shields.io/hexpm/v/nsai_work.svg)](https://hex.pm/packages/nsai_work)
+[![Documentation](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/nsai_work)
 
-NSAI.Work provides a protocol-first, multi-tenant job scheduling system with priority queues, resource-aware scheduling, and pluggable backend execution.
+NsaiWork provides a protocol-first, multi-tenant job scheduling system with priority queues, resource-aware scheduling, and pluggable backend execution.
 
 ## Features
 
@@ -20,12 +24,12 @@ NSAI.Work provides a protocol-first, multi-tenant job scheduling system with pri
 
 ## Installation
 
-Add `work` to your list of dependencies in `mix.exs`:
+Add `nsai_work` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:work, "~> 0.1.0"}
+    {:nsai_work, "~> 0.1.0"}
   ]
 end
 ```
@@ -34,43 +38,65 @@ end
 
 ```elixir
 # Start the application
-{:ok, _} = Application.ensure_all_started(:work)
+{:ok, _} = Application.ensure_all_started(:nsai_work)
 
 # Create a job
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "acme",
   namespace: "default",
   priority: :interactive,
   payload: %{tool: "calculator", args: [2, 2]},
-  resources: Work.Resources.new(cpu: 1.0, memory_mb: 512)
+  resources: NsaiWork.Resources.new(cpu: 1.0, memory_mb: 512)
 )
 
 # Submit for execution
-{:ok, submitted} = Work.submit(job)
+{:ok, submitted} = NsaiWork.submit(job)
 
 # Check status
-{:ok, job} = Work.get(submitted.id)
+{:ok, job} = NsaiWork.get(submitted.id)
 IO.inspect(job.status)  # => :running or :succeeded
 
 # Get statistics
-stats = Work.stats()
+stats = NsaiWork.stats()
 IO.inspect(stats)
+```
+
+## Examples
+
+Runnable examples are in the [`examples/`](examples/README.md) directory:
+
+- `basic_job.exs` — Submit and track a job
+- `priority_queues.exs` — Priority queue routing
+- `custom_backend.exs` — Implement a custom backend
+- `telemetry_events.exs` — Observe telemetry events
+- `retry_policies.exs` — Configure retry behavior
+
+Run any example with:
+
+```bash
+mix run examples/basic_job.exs
+```
+
+Or run all examples:
+
+```bash
+./examples/run_all.sh
 ```
 
 ## Architecture
 
-NSAI.Work consists of several cooperating components:
+NsaiWork consists of several cooperating components:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              Application Layer                  │
-│  (Crucible, Synapse, CNS, ALTAR, etc.)          │
-└────────────────────┬────────────────────────────┘
-                     │ submit jobs
-                     ▼
+│               Application Layer                 │
+│     (Crucible, Synapse, CNS, ALTAR, etc.)       │
+└───────────────────────┬─────────────────────────┘
+                        │ submit jobs
+                        ▼
 ┌─────────────────────────────────────────────────┐
-│              Work.Scheduler                     │
+│               NsaiWork.Scheduler                │
 │  - Admission control                            │
 │  - Priority queue routing                       │
 │  - Resource-aware dispatch                      │
@@ -84,7 +110,7 @@ NSAI.Work consists of several cooperating components:
                      │
                      ▼
 ┌─────────────────────────────────────────────────┐
-│              Work.Executor                      │
+│                NsaiWork.Executor                │
 │  - Backend selection                            │
 │  - Job execution                                │
 │  - Retry handling                               │
@@ -97,13 +123,13 @@ NSAI.Work consists of several cooperating components:
 
 ### Components
 
-- **Work.Job**: Universal job IR with metadata, resources, constraints
-- **Work.Scheduler**: Priority queue management and admission control
-- **Work.Queue**: FIFO queues per priority level
-- **Work.Executor**: Job execution with backend delegation
-- **Work.Registry**: ETS-based job storage and indexing
-- **Work.Backend**: Pluggable execution backends
-- **Work.Telemetry**: Event instrumentation
+- **NsaiWork.Job**: Universal job IR with metadata, resources, constraints
+- **NsaiWork.Scheduler**: Priority queue management and admission control
+- **NsaiWork.Queue**: FIFO queues per priority level
+- **NsaiWork.Executor**: Job execution with backend delegation
+- **NsaiWork.Registry**: ETS-based job storage and indexing
+- **NsaiWork.Backend**: Pluggable execution backends
+- **NsaiWork.Telemetry**: Event instrumentation
 
 ## Job Lifecycle
 
@@ -137,7 +163,7 @@ Jobs are scheduled based on four priority levels:
 Specify resource requirements for intelligent scheduling:
 
 ```elixir
-resources = Work.Resources.new(
+resources = NsaiWork.Resources.new(
   cpu: 4.0,                    # CPU cores
   memory_mb: 8192,             # Memory in MB
   gpu: "A100",                 # GPU type
@@ -146,7 +172,7 @@ resources = Work.Resources.new(
   max_cost_usd: 1.0            # Cost cap
 )
 
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :training_step,
   tenant_id: "acme",
   namespace: "ml",
@@ -160,7 +186,7 @@ job = Work.Job.new(
 Configure retry behavior per job:
 
 ```elixir
-constraints = Work.Constraints.new(
+constraints = NsaiWork.Constraints.new(
   retry_policy: %{
     max_attempts: 5,
     backoff: :exponential,
@@ -170,7 +196,7 @@ constraints = Work.Constraints.new(
   }
 )
 
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "acme",
   namespace: "default",
@@ -181,7 +207,7 @@ job = Work.Job.new(
 
 ## Backends
 
-NSAI.Work ships with three built-in backends:
+NsaiWork ships with three built-in backends:
 
 ### Local Backend
 
@@ -189,7 +215,7 @@ Direct BEAM process execution (development, lightweight tasks):
 
 ```elixir
 # Automatically selected for simple jobs
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "test",
   namespace: "default",
@@ -203,12 +229,12 @@ Executes tool calls via ALTAR's LATER runtime with ADM function declarations:
 
 ```elixir
 # Enable ALTAR in config
-config :work,
+config :nsai_work,
   enable_altar: true,
-  altar_registry: Work.AltarRegistry
+  altar_registry: NsaiWork.AltarRegistry
 
 # Register a tool
-Work.AltarTools.register(
+NsaiWork.AltarTools.register(
   "proposer_extract",
   "Extract claims from document",
   %{
@@ -223,7 +249,7 @@ Work.AltarTools.register(
 )
 
 # Submit a tool call job
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "acme",
   namespace: "cns",
@@ -233,7 +259,7 @@ job = Work.Job.new(
   }
 )
 
-{:ok, job} = Work.submit(job)
+{:ok, job} = NsaiWork.submit(job)
 ```
 
 See the [ALTAR Integration](#altar-integration) section for more details.
@@ -244,22 +270,22 @@ Testing backend with configurable behavior:
 
 ```elixir
 # Configure mock to fail
-Work.Backends.Mock.configure(behavior: {:fail, "Simulated failure"})
+NsaiWork.Backends.Mock.configure(behavior: {:fail, "Simulated failure"})
 
 # Or delay execution
-Work.Backends.Mock.configure(delay_ms: 500)
+NsaiWork.Backends.Mock.configure(delay_ms: 500)
 
 # Check execution history
-history = Work.Backends.Mock.history()
+history = NsaiWork.Backends.Mock.history()
 ```
 
 ### Custom Backends
 
-Implement the `Work.Backend` behaviour:
+Implement the `NsaiWork.Backend` behaviour:
 
 ```elixir
 defmodule MyApp.Backend.Custom do
-  @behaviour Work.Backend
+  @behaviour NsaiWork.Backend
 
   @impl true
   def execute(job) do
@@ -274,9 +300,9 @@ defmodule MyApp.Backend.Custom do
 end
 
 # Configure executor with custom backend
-Work.Executor.start_link(
+NsaiWork.Executor.start_link(
   backends: [
-    local: Work.Backends.Local,
+    local: NsaiWork.Backends.Local,
     custom: MyApp.Backend.Custom
   ]
 )
@@ -284,63 +310,63 @@ Work.Executor.start_link(
 
 ## Telemetry
 
-NSAI.Work emits telemetry events for observability:
+NsaiWork emits telemetry events for observability:
 
 ```elixir
 # Attach a handler
 :telemetry.attach(
-  "work-metrics",
-  [:work, :job, :completed],
+  "nsai-work-metrics",
+  [:nsai_work, :job, :completed],
   &MyApp.Metrics.handle_event/4,
   nil
 )
 
 # Or use the built-in console logger
-Work.Telemetry.attach_console_logger()
+NsaiWork.Telemetry.attach_console_logger()
 ```
 
 ### Events
 
-- `[:work, :job, :submitted]` - Job submitted
-- `[:work, :job, :queued]` - Job enqueued
-- `[:work, :job, :started]` - Job execution started
-- `[:work, :job, :completed]` - Job completed
-- `[:work, :job, :canceled]` - Job canceled
-- `[:work, :job, :retry]` - Job retry scheduled
-- `[:work, :scheduler, :admit]` - Admission decision
-- `[:work, :scheduler, :select_backend]` - Backend selection
-- `[:work, :queue, :enqueue]` - Queue enqueue
-- `[:work, :queue, :dequeue]` - Queue dequeue
-- `[:work, :queue, :overflow]` - Queue capacity exceeded
+- `[:nsai_work, :job, :submitted]` - Job submitted
+- `[:nsai_work, :job, :queued]` - Job enqueued
+- `[:nsai_work, :job, :started]` - Job execution started
+- `[:nsai_work, :job, :completed]` - Job completed
+- `[:nsai_work, :job, :canceled]` - Job canceled
+- `[:nsai_work, :job, :retry]` - Job retry scheduled
+- `[:nsai_work, :scheduler, :admit]` - Admission decision
+- `[:nsai_work, :scheduler, :select_backend]` - Backend selection
+- `[:nsai_work, :queue, :enqueue]` - Queue enqueue
+- `[:nsai_work, :queue, :dequeue]` - Queue dequeue
+- `[:nsai_work, :queue, :overflow]` - Queue capacity exceeded
 
 ## Multi-Tenancy
 
 All jobs belong to a tenant and namespace:
 
 ```elixir
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   tenant_id: "customer-123",
   namespace: "production",
   # ...
 )
 
 # List jobs for a tenant
-jobs = Work.list("customer-123")
+jobs = NsaiWork.list("customer-123")
 
 # Filter by namespace
-jobs = Work.list("customer-123", namespace: "production")
+jobs = NsaiWork.list("customer-123", namespace: "production")
 
 # Filter by status
-running = Work.list("customer-123", status: :running)
+running = NsaiWork.list("customer-123", status: :running)
 ```
 
 ## ALTAR Integration
 
-ALTAR (Adaptive Language Tool and Action Runtime) provides a local execution runtime for tool calls with ADM (function declaration) support. The ALTAR backend enables Work to execute tool calls through ALTAR's LATER runtime.
+ALTAR (Adaptive Language Tool and Action Runtime) provides a local execution runtime for tool calls with ADM (function declaration) support. The ALTAR backend enables NsaiWork to execute tool calls through ALTAR's LATER runtime.
 
 ### Setup
 
-1. Add ALTAR to your dependencies (already included with Work):
+1. Add ALTAR to your dependencies (already included with NsaiWork):
 
 ```elixir
 {:altar, "~> 0.2.0"}
@@ -350,18 +376,18 @@ ALTAR (Adaptive Language Tool and Action Runtime) provides a local execution run
 
 ```elixir
 # config/config.exs
-config :work,
+config :nsai_work,
   enable_altar: true,
-  altar_registry: Work.AltarRegistry
+  altar_registry: NsaiWork.AltarRegistry
 ```
 
 ### Registering Tools
 
-Use `Work.AltarTools` to register tools with ALTAR:
+Use `NsaiWork.AltarTools` to register tools with ALTAR:
 
 ```elixir
 # Simple tool
-Work.AltarTools.register(
+NsaiWork.AltarTools.register(
   "calculator_add",
   "Add two numbers",
   %{
@@ -376,7 +402,7 @@ Work.AltarTools.register(
 )
 
 # Complex tool with nested objects
-Work.AltarTools.register(
+NsaiWork.AltarTools.register(
   "search_documents",
   "Search document corpus with filters",
   %{
@@ -435,7 +461,7 @@ end
 Create and submit jobs with the `:tool_call` kind:
 
 ```elixir
-job = Work.Job.new(
+job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "acme",
   namespace: "default",
@@ -449,10 +475,10 @@ job = Work.Job.new(
   }
 )
 
-{:ok, submitted_job} = Work.submit(job)
+{:ok, submitted_job} = NsaiWork.submit(job)
 
 # Wait for completion
-case Work.get(submitted_job.id) do
+case NsaiWork.get(submitted_job.id) do
   {:ok, %{status: :succeeded, result: result}} ->
     IO.inspect(result)
 
@@ -465,7 +491,7 @@ end
 
 ```elixir
 # Check if tool exists
-if Work.AltarTools.registered?("calculator_add") do
+if NsaiWork.AltarTools.registered?("calculator_add") do
   IO.puts("Tool is available")
 end
 ```
@@ -476,7 +502,7 @@ For CNS (Critic-Network Synthesis) agents:
 
 ```elixir
 # Register Proposer agent tool
-Work.AltarTools.register(
+NsaiWork.AltarTools.register(
   "cns_proposer",
   "Extract structured claims from documents",
   %{
@@ -491,7 +517,7 @@ Work.AltarTools.register(
 )
 
 # Register Antagonist agent tool
-Work.AltarTools.register(
+NsaiWork.AltarTools.register(
   "cns_antagonist",
   "Find contradictions in claim networks",
   %{
@@ -506,7 +532,7 @@ Work.AltarTools.register(
 )
 
 # Execute dialectical workflow
-proposer_job = Work.Job.new(
+proposer_job = NsaiWork.Job.new(
   kind: :tool_call,
   tenant_id: "research",
   namespace: "cns",
@@ -517,7 +543,7 @@ proposer_job = Work.Job.new(
   }
 )
 
-{:ok, proposer_result} = Work.submit(proposer_job)
+{:ok, proposer_result} = NsaiWork.submit(proposer_job)
 ```
 
 ## Integration Examples
@@ -527,7 +553,7 @@ proposer_job = Work.Job.new(
 ```elixir
 defmodule Crucible.Pipeline.Runner do
   def run_stage(experiment, stage, context) do
-    job = Work.Job.new(
+    job = NsaiWork.Job.new(
       kind: :experiment_step,
       tenant_id: context[:tenant_id],
       namespace: experiment.id,
@@ -537,12 +563,12 @@ defmodule Crucible.Pipeline.Runner do
         stage_name: stage.name,
         input_context: context
       },
-      constraints: Work.Constraints.new(
+      constraints: NsaiWork.Constraints.new(
         concurrency_group: "experiment:#{experiment.id}"
       )
     )
 
-    Work.submit(job)
+    NsaiWork.submit(job)
   end
 end
 ```
@@ -552,7 +578,7 @@ end
 ```elixir
 defmodule ALTAR.GRID do
   def dispatch(tool, input, opts \\ []) do
-    job = Work.Job.new(
+    job = NsaiWork.Job.new(
       kind: :tool_call,
       tenant_id: opts[:tenant_id] || "default",
       namespace: opts[:namespace] || "default",
@@ -565,7 +591,7 @@ defmodule ALTAR.GRID do
       resources: translate_resources(tool.resources)
     )
 
-    Work.submit(job)
+    NsaiWork.submit(job)
   end
 end
 ```
@@ -592,8 +618,8 @@ MIT License - see LICENSE file for details
 
 ## Links
 
-- [GitHub](https://github.com/North-Shore-AI/work)
-- [Documentation](https://hexdocs.pm/work)
+- [GitHub](https://github.com/North-Shore-AI/nsai_work)
+- [Documentation](https://hexdocs.pm/nsai_work)
 - [Changelog](CHANGELOG.md)
 - [North-Shore-AI Platform](https://github.com/North-Shore-AI)
 

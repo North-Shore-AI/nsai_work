@@ -1,4 +1,4 @@
-defmodule Work.Scheduler do
+defmodule NsaiWork.Scheduler do
   @moduledoc """
   Job scheduler with priority queue management.
 
@@ -12,7 +12,7 @@ defmodule Work.Scheduler do
   use GenServer
   require Logger
 
-  alias Work.{Executor, Job, Queue, Registry, Telemetry}
+  alias NsaiWork.{Executor, Job, Queue, Registry, Telemetry}
 
   @priorities [:realtime, :interactive, :batch, :offline]
 
@@ -36,7 +36,7 @@ defmodule Work.Scheduler do
 
   ## Examples
 
-      iex> Work.Scheduler.submit(job)
+      iex> NsaiWork.Scheduler.submit(job)
       {:ok, job}
   """
   @spec submit(Job.t()) :: {:ok, Job.t()} | {:error, term()}
@@ -49,7 +49,7 @@ defmodule Work.Scheduler do
 
   ## Examples
 
-      iex> Work.Scheduler.stats()
+      iex> NsaiWork.Scheduler.stats()
       %{
         queues: %{
           realtime: %{size: 0},
@@ -93,7 +93,7 @@ defmodule Work.Scheduler do
       executing: 0
     }
 
-    Logger.info("Work.Scheduler started (max_concurrent: #{max_concurrent})")
+    Logger.info("NsaiWork.Scheduler started (max_concurrent: #{max_concurrent})")
 
     # Start dispatch loop
     schedule_dispatch()
@@ -214,6 +214,6 @@ defmodule Work.Scheduler do
   end
 
   defp queue_name(priority) do
-    :"work_queue_#{priority}"
+    :"nsai_work_queue_#{priority}"
   end
 end

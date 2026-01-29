@@ -1,4 +1,4 @@
-defmodule Work.Telemetry do
+defmodule NsaiWork.Telemetry do
   @moduledoc """
   Telemetry instrumentation for Work events.
 
@@ -8,28 +8,28 @@ defmodule Work.Telemetry do
   ## Events
 
   ### Job Lifecycle
-  - `[:work, :job, :submitted]` - Job submitted
-  - `[:work, :job, :queued]` - Job enqueued
-  - `[:work, :job, :started]` - Job execution started
-  - `[:work, :job, :completed]` - Job completed (success or failure)
-  - `[:work, :job, :canceled]` - Job canceled
-  - `[:work, :job, :retry]` - Job retry scheduled
+  - `[:nsai_work, :job, :submitted]` - Job submitted
+  - `[:nsai_work, :job, :queued]` - Job enqueued
+  - `[:nsai_work, :job, :started]` - Job execution started
+  - `[:nsai_work, :job, :completed]` - Job completed (success or failure)
+  - `[:nsai_work, :job, :canceled]` - Job canceled
+  - `[:nsai_work, :job, :retry]` - Job retry scheduled
 
   ### Scheduler
-  - `[:work, :scheduler, :admit]` - Admission decision
-  - `[:work, :scheduler, :select_backend]` - Backend selection
+  - `[:nsai_work, :scheduler, :admit]` - Admission decision
+  - `[:nsai_work, :scheduler, :select_backend]` - Backend selection
 
   ### Queue
-  - `[:work, :queue, :enqueue]` - Job enqueued
-  - `[:work, :queue, :dequeue]` - Job dequeued
-  - `[:work, :queue, :overflow]` - Queue capacity exceeded
+  - `[:nsai_work, :queue, :enqueue]` - Job enqueued
+  - `[:nsai_work, :queue, :dequeue]` - Job dequeued
+  - `[:nsai_work, :queue, :overflow]` - Queue capacity exceeded
 
   ## Usage
 
       # Attach a handler
       :telemetry.attach(
-        "work-logger",
-        [:work, :job, :completed],
+        "nsai-work-logger",
+        [:nsai_work, :job, :completed],
         &MyApp.handle_telemetry/4,
         nil
       )
@@ -42,7 +42,7 @@ defmodule Work.Telemetry do
   """
   def job_submitted(job) do
     :telemetry.execute(
-      [:work, :job, :submitted],
+      [:nsai_work, :job, :submitted],
       %{count: 1},
       %{
         job_id: job.id,
@@ -58,7 +58,7 @@ defmodule Work.Telemetry do
   """
   def job_queued(job, queue_name) do
     :telemetry.execute(
-      [:work, :job, :queued],
+      [:nsai_work, :job, :queued],
       %{count: 1},
       %{
         job_id: job.id,
@@ -74,7 +74,7 @@ defmodule Work.Telemetry do
   """
   def job_started(job) do
     :telemetry.execute(
-      [:work, :job, :started],
+      [:nsai_work, :job, :started],
       %{count: 1},
       %{
         job_id: job.id,
@@ -90,10 +90,10 @@ defmodule Work.Telemetry do
   Emits a job completed event.
   """
   def job_completed(job) do
-    duration_ms = Work.Job.duration_ms(job) || 0
+    duration_ms = NsaiWork.Job.duration_ms(job) || 0
 
     :telemetry.execute(
-      [:work, :job, :completed],
+      [:nsai_work, :job, :completed],
       %{
         count: 1,
         duration_ms: duration_ms
@@ -113,7 +113,7 @@ defmodule Work.Telemetry do
   """
   def job_canceled(job) do
     :telemetry.execute(
-      [:work, :job, :canceled],
+      [:nsai_work, :job, :canceled],
       %{count: 1},
       %{
         job_id: job.id,
@@ -127,7 +127,7 @@ defmodule Work.Telemetry do
   """
   def job_retry(job, delay_ms) do
     :telemetry.execute(
-      [:work, :job, :retry],
+      [:nsai_work, :job, :retry],
       %{
         count: 1,
         delay_ms: delay_ms
@@ -145,7 +145,7 @@ defmodule Work.Telemetry do
   """
   def scheduler_admit(job, decision) do
     :telemetry.execute(
-      [:work, :scheduler, :admit],
+      [:nsai_work, :scheduler, :admit],
       %{count: 1},
       %{
         job_id: job.id,
@@ -160,7 +160,7 @@ defmodule Work.Telemetry do
   """
   def scheduler_select_backend(job, backend) do
     :telemetry.execute(
-      [:work, :scheduler, :select_backend],
+      [:nsai_work, :scheduler, :select_backend],
       %{count: 1},
       %{
         job_id: job.id,
@@ -175,7 +175,7 @@ defmodule Work.Telemetry do
   """
   def queue_enqueue(queue_name, job) do
     :telemetry.execute(
-      [:work, :queue, :enqueue],
+      [:nsai_work, :queue, :enqueue],
       %{count: 1},
       %{
         queue: queue_name,
@@ -190,7 +190,7 @@ defmodule Work.Telemetry do
   """
   def queue_dequeue(queue_name, job) do
     :telemetry.execute(
-      [:work, :queue, :dequeue],
+      [:nsai_work, :queue, :dequeue],
       %{count: 1},
       %{
         queue: queue_name,
@@ -204,7 +204,7 @@ defmodule Work.Telemetry do
   """
   def queue_overflow(queue_name) do
     :telemetry.execute(
-      [:work, :queue, :overflow],
+      [:nsai_work, :queue, :overflow],
       %{count: 1},
       %{queue: queue_name}
     )
@@ -217,25 +217,25 @@ defmodule Work.Telemetry do
 
   ## Examples
 
-      Work.Telemetry.attach_console_logger()
+      NsaiWork.Telemetry.attach_console_logger()
   """
   def attach_console_logger do
     events = [
-      [:work, :job, :submitted],
-      [:work, :job, :queued],
-      [:work, :job, :started],
-      [:work, :job, :completed],
-      [:work, :job, :canceled],
-      [:work, :job, :retry],
-      [:work, :scheduler, :admit],
-      [:work, :scheduler, :select_backend],
-      [:work, :queue, :enqueue],
-      [:work, :queue, :dequeue],
-      [:work, :queue, :overflow]
+      [:nsai_work, :job, :submitted],
+      [:nsai_work, :job, :queued],
+      [:nsai_work, :job, :started],
+      [:nsai_work, :job, :completed],
+      [:nsai_work, :job, :canceled],
+      [:nsai_work, :job, :retry],
+      [:nsai_work, :scheduler, :admit],
+      [:nsai_work, :scheduler, :select_backend],
+      [:nsai_work, :queue, :enqueue],
+      [:nsai_work, :queue, :dequeue],
+      [:nsai_work, :queue, :overflow]
     ]
 
     :telemetry.attach_many(
-      "work-console-logger",
+      "nsai-work-console-logger",
       events,
       &handle_event/4,
       nil
@@ -244,7 +244,7 @@ defmodule Work.Telemetry do
 
   defp handle_event(event, measurements, metadata, _config) do
     Logger.info(
-      "[Work.Telemetry] #{inspect(event)} - " <>
+      "[NsaiWork.Telemetry] #{inspect(event)} - " <>
         "measurements: #{inspect(measurements)}, " <>
         "metadata: #{inspect(metadata)}"
     )

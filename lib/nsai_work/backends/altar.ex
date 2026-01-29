@@ -1,9 +1,9 @@
-defmodule Work.Backends.Altar do
+defmodule NsaiWork.Backends.Altar do
   @moduledoc """
   ALTAR backend for Work job execution.
 
   Delegates tool_call jobs to ALTAR's LATER runtime,
-  converting between Work.Job and ADM structures.
+  converting between NsaiWork.Job and ADM structures.
 
   ALTAR (Adaptive Language Tool and Action Runtime) provides:
   - ADM (data model) for function declarations and calls
@@ -13,9 +13,9 @@ defmodule Work.Backends.Altar do
 
   Configure the ALTAR registry name in your application config:
 
-      config :work,
+      config :nsai_work,
         enable_altar: true,
-        altar_registry: Work.AltarRegistry
+        altar_registry: NsaiWork.AltarRegistry
 
   ## Supported Job Types
 
@@ -34,7 +34,7 @@ defmodule Work.Backends.Altar do
   ## Examples
 
       # Create a tool call job
-      job = Work.Job.new(
+      job = NsaiWork.Job.new(
         kind: :tool_call,
         tenant_id: "acme",
         namespace: "default",
@@ -45,21 +45,21 @@ defmodule Work.Backends.Altar do
       )
 
       # Execute via ALTAR backend
-      {:ok, result} = Work.Backends.Altar.execute(job)
+      {:ok, result} = NsaiWork.Backends.Altar.execute(job)
   """
 
-  @behaviour Work.Backend
+  @behaviour NsaiWork.Backend
 
   alias Altar.ADM.{FunctionCall, ToolResult}
   alias Altar.LATER.Executor
-  alias Work.{Error, Job}
+  alias NsaiWork.{Error, Job}
   require Logger
 
   @impl true
   def execute(%Job{kind: :tool_call} = job) do
     Logger.debug("ALTAR backend executing job #{job.id}")
 
-    # Convert Work.Job to FunctionCall
+    # Convert NsaiWork.Job to FunctionCall
     call = job_to_function_call(job)
 
     # Execute via ALTAR (always returns {:ok, ToolResult.t()})
@@ -134,6 +134,6 @@ defmodule Work.Backends.Altar do
   end
 
   defp registry_name do
-    Application.get_env(:work, :altar_registry, Work.AltarRegistry)
+    Application.get_env(:nsai_work, :altar_registry, NsaiWork.AltarRegistry)
   end
 end

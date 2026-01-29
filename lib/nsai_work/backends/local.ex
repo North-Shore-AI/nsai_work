@@ -1,4 +1,4 @@
-defmodule Work.Backends.Local do
+defmodule NsaiWork.Backends.Local do
   @moduledoc """
   Local execution backend that runs jobs in BEAM processes.
 
@@ -14,9 +14,9 @@ defmodule Work.Backends.Local do
   - Resource-intensive work
   """
 
-  @behaviour Work.Backend
+  @behaviour NsaiWork.Backend
 
-  alias Work.{Error, Job}
+  alias NsaiWork.{Error, Job}
   require Logger
 
   @impl true
